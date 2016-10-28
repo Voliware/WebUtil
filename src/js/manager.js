@@ -46,6 +46,9 @@ class Manager extends EventSystem {
 		// so any mutations must be done
 		// to the object itself, not this ref
 		this.objects = {};
+		// an array of the objects in the
+		// order they were added
+		this._objectsArray = [];
 		this.count = 0;
 
 		// cached data passed to manage()
@@ -96,12 +99,15 @@ class Manager extends EventSystem {
 		this.trigger('add', obj);
 		this.count++;
 
+		this._objectsArray[this.count] = obj;
+
 		if(isDefined(id)) {
 			obj[this.settings.identifier] = id;
 			return this.objects[id] = obj;
 		}
-		else
+		else {
 			return this.objects[obj[this.settings.identifier]] = obj;
+		}
 	}	
 
 	/**
@@ -135,13 +141,14 @@ class Manager extends EventSystem {
 				delete this.objects[arg];
 		}
 		// an object was passed
-		else if (this.objects[arg[this.settings.id]])
-			delete this.objects[arg[this.settings.id]];
+		else if (this.objects[arg[this.settings.identifier]])
+			delete this.objects[arg[this.settings.identifier]];
 		// fail
 		else
 			return this;
 
-		this.count--;
+		if(this.count > 0)
+			this.count--;
 		this.trigger('delete', arguments[0]);
 		return this;
 	}
@@ -326,20 +333,19 @@ class Manager extends EventSystem {
 	 * Serialize all objects in some way
 	 * @param {number} [index=0] - index to start at
 	 * @param {number} [max=0] - max amount to serialize
-	 * @returns {object}
+	 * @returns {object[]}
 	 */
 	serializer(index = 0, max = 0){
 		var objects = [];
-		//var c = 0;
-		Util.each(this.objects, function(i, e){
-			// if(c >= max)
-			// 	return false;
-			if(e.toObject)
-				objects.push(e.toObject());
-			//c++;
-		});
-		return {
-			objects : objects
-		};
+		for(index; index < max; index++){
+			if(index >= max)
+				break;
+			
+			var obj = this._objectsArray[i];
+			if(obj.toObject)
+				objects.push(obj.toObject());
+			index++;
+		}
+		return objects;
 	}
 }
