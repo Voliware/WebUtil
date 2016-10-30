@@ -46,13 +46,16 @@ class Manager extends EventSystem {
 		// so any mutations must be done
 		// to the object itself, not this ref
 		this.objects = {};
-		// an array of the objects in the
-		// order they were added
-		this._objectsArray = [];
 		this.count = 0;
 
 		// cached data passed to manage()
 		this._cachedData = {};
+		// last serialized collection
+		this.serializedObjects = [];
+		// a flag that is set to true when the add/edit/delete
+		// functions are called, to indicate that the
+		// previously serialized data is now old
+		this.requiresNewSerialize = false;
 
 		return this;
 	}
@@ -89,24 +92,46 @@ class Manager extends EventSystem {
 
 	/**
 	 * Adds an object to the collection.
-	 * Replaces any existing object
+	 * Replaces any existing object with the same identifier.
 	 * @param {object} obj - the object to add
 	 * @param {string} [id] - the id of the object
 	 * @returns {*}
 	 * @private
 	 */
 	_add(obj, id) {
-		this.trigger('add', obj);
-		this.count++;
+		var self = this;
+		var identifier = this.settings.identifier;
 
-		this._objectsArray[this.count] = obj;
-
+		// if an id is passed, add it to
+		// the object as the identifier property
 		if(isDefined(id)) {
-			obj[this.settings.identifier] = id;
-			return this.objects[id] = obj;
+			String(id);
+			obj[identifier] = id;
+			this.objects[id] = obj;
+			postAdd();
 		}
+		// if no id is passed, check that it has
+		// an identifier property already
+		else if(obj[identifier]) {
+			this.objects[obj[identifier]] = obj;
+			postAdd();
+		}
+		// otherwise, it cannot be managed
 		else {
-			return this.objects[obj[this.settings.identifier]] = obj;
+			console.warn('Manager._add: cannot add an object with no identifier');
+		}
+		
+		return obj;
+
+		/**
+		 * After a successful add, trigger
+		 * the event and increase the counter
+		 */
+		function postAdd(){
+			self.requiresNewSerialize = true;
+			self.trigger('add', obj);
+			self.count++;
+			obj._count = self.count;
 		}
 	}	
 
@@ -118,12 +143,33 @@ class Manager extends EventSystem {
 	 * @private
 	 */
 	_update(obj, id) {
-		this.trigger('update', obj);
+		var self = this;
+		var identifier = this.settings.identifier;
 
-		if(id)
-			return this.objects[id] = obj;
-		else
-			return this.objects[obj[this.settings.identifier]] = obj;
+		if(isDefined(id)) {
+			String(id);
+			this.objects[id] = obj;
+			postUpdate();
+		}
+		else if(obj[identifier]){
+			this.objects[obj[identifier]] = obj;
+			postUpdate();
+		}
+		else 
+			console.warn('Manager._update: cannot update an object with no identifier');
+				
+		return obj;
+
+		/**
+		 * After a successful update, trigger
+		 * the event and reset the serialize flag
+		 */
+		function postUpdate(){
+			self.requiresNewSerialize = true;
+			self.trigger('add', obj);
+			self.count++;
+			obj._count = self.count;
+		}
 	}
 
 	/**
@@ -134,22 +180,29 @@ class Manager extends EventSystem {
 	 */
 	_delete() {
 		var arg = arguments[0];
+		var obj = null;
+		var identifier = this.settings.identifier;
+
 		// an object id was passed
 		if(isString(arg) || isNumber(arg)){
 			String(arg);
 			if(this.objects[arg])
-				delete this.objects[arg];
+				obj = this.objects[arg];
 		}
 		// an object was passed
-		else if (this.objects[arg[this.settings.identifier]])
-			delete this.objects[arg[this.settings.identifier]];
-		// fail
+		else if (this.objects[arg[identifier]])
+			obj = this.objects[arg[identifier]];
 		else
-			return this;
+			console.warn('Manager._delete: cannot delete an object with no identifier');
 
-		if(this.count > 0)
-			this.count--;
-		this.trigger('delete', arguments[0]);
+		if(obj) {
+			var id = obj[identifier];
+			this.trigger('delete', id);
+			delete this.objects[id];
+			this.requiresNewSerialize = true;
+			if (this.count > 0)
+				this.count--;
+		}
 		return this;
 	}
 
@@ -159,7 +212,7 @@ class Manager extends EventSystem {
 	 * @private
 	 */
 	_empty(){
-		// in likely case there are references
+		// ..in likely case there are references
 		for(var i in this.objects){
 			delete this.objects[i];
 		}
@@ -330,22 +383,22 @@ class Manager extends EventSystem {
 	}
 
 	/**
-	 * Serialize all objects in some way
+	 * Serialize all objects that have a serializer method
 	 * @param {number} [index=0] - index to start at
-	 * @param {number} [max=0] - max amount to serialize
+	 * @param {number} [max=0] - max amount to return
 	 * @returns {object[]}
 	 */
 	serializer(index = 0, max = 0){
-		var objects = [];
-		for(index; index < max; index++){
-			if(index >= max)
-				break;
-			
-			var obj = this._objectsArray[i];
-			if(obj.toObject)
-				objects.push(obj.toObject());
-			index++;
+		if(this.requiresNewSerialize){
+			var self = this;
+			this.serializedObjects = [];
+			$.each(this.objects, function(i, e){
+				if(e.serializer)
+					self.serializedObjects.push(e.serializer());
+			});
 		}
-		return objects;
+
+		max = max > 0 ? max : this.serializedObjects.length;
+		return this.serializedObjects.slice(index, max);
 	}
 }

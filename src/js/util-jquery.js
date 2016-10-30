@@ -7,6 +7,13 @@
 if(!isDefined($))
 	throw new ReferenceError("util-jquery requires jquery 2.2.2 or greater");
 
+// helpers
+if(typeof isJquery === 'undefined'){
+	window.isJquery = function(x){
+		return x instanceof $;
+	}
+}
+
 /**
  * jQuery utility functions
  */
@@ -17,6 +24,7 @@ class $Util {
 	 * $wrapper property of an object, but
 	 * always returns the base object
 	 * @param {*} obj - some object that has a $wrapper property
+	 * @param {jQuery} obj.$wrapper
 	 */
 	static jQuerify(obj) {
 		if (!obj.$wrapper)
