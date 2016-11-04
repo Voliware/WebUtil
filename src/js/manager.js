@@ -396,6 +396,7 @@ class Manager extends EventSystem {
 				if(e.serializer)
 					self.serializedObjects.push(e.serializer());
 			});
+			this.requiresNewSerialize = false;
 		}
 
 		max = max > 0 ? max : this.serializedObjects.length;
