@@ -60,32 +60,6 @@ $Util.populate = {};
 (function($) {
 
 	/**
-	 * Append option(s) to a select
-	 * @param {*} arguments - Either an object of key/value pairs, where the key is the
-	 * option value and the value is the string within the tags,
-	 * or a key and value as two parameters to add one option
-	 * @returns {jQuery}
-	 */
-	$.fn.addToSelect = function(){
-		var data = {};
-
-		if(arguments.length > 1)
-			data[arguments[0]] = arguments[1];
-		else
-			data = arguments[0];
-
-		var $this = $(this);
-		if($this.is('select')){
-			Util.each(data, function(i, e){
-				var opt = '<option value="'+i+'">'+e+'</option>';
-				$this.append(opt);
-			});
-		}
-
-		return this;
-	};
-
-	/**
 	 * Checks if an element has an attribute
 	 * @param {string} attr - attribute name
 	 * @returns {boolean} - true if it does, false otherwise
@@ -206,6 +180,32 @@ $Util.populate = {};
 			$(this).slideDown(options, cb);
 		else
 			$(this).slideUp(options, cb);
+		return this;
+	};
+
+	/**
+	 * Append option(s) to a select
+	 * @param {*} arguments - Either an object of key/value pairs, where the key is the
+	 * option value and the value is the string within the tags,
+	 * or a key and value as two parameters to add one option
+	 * @returns {jQuery}
+	 */
+	$.fn.addToSelect = function(){
+		var data = {};
+
+		if(arguments.length > 1)
+			data[arguments[0]] = arguments[1];
+		else
+			data = arguments[0];
+
+		var $this = $(this);
+		if($this.is('select')){
+			Util.each(data, function(i, e){
+				var opt = '<option value="'+i+'">'+e+'</option>';
+				$this.append(opt);
+			});
+		}
+
 		return this;
 	};
 

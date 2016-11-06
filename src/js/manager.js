@@ -79,15 +79,26 @@ class Manager extends EventSystem {
 	 * by id (string/number) or by an object's
 	 * property as set in this.settings.identifier
 	 * @param {...(number|object|string)} arguments - the object or the id of the object
-	 * @returns {*}
+	 * @returns {*|null}
 	 * @private
 	 */
-	_get(){
+	_get() {
 		var arg = arguments[0];
-		if(isString(arg) || isNumber(arg))
-			return this.objects[arg];
-		else
-			return this.objects[arg[this.settings.identifier]];
+		var obj = null;
+		var identifier = this.settings.identifier;
+
+		// an object id was passed
+		if(isString(arg) || isNumber(arg)){
+			String(arg);
+			if(this.objects[arg])
+				obj = this.objects[arg];
+		}
+		// an object was passed
+		else if (this.objects[arg[identifier]]) {
+			obj = this.objects[arg[identifier]];
+		}
+
+		return obj;
 	}
 
 	/**
@@ -183,17 +194,7 @@ class Manager extends EventSystem {
 		var obj = null;
 		var identifier = this.settings.identifier;
 
-		// an object id was passed
-		if(isString(arg) || isNumber(arg)){
-			String(arg);
-			if(this.objects[arg])
-				obj = this.objects[arg];
-		}
-		// an object was passed
-		else if (this.objects[arg[identifier]])
-			obj = this.objects[arg[identifier]];
-		else
-			console.warn('Manager._delete: cannot delete an object with no identifier');
+		obj = this._get(...arguments);
 
 		if(obj) {
 			var id = obj[identifier];
@@ -203,6 +204,9 @@ class Manager extends EventSystem {
 			if (this.count > 0)
 				this.count--;
 		}
+		else
+			console.error('Manager._delete: cannot delete an object with no identifier');
+
 		return this;
 	}
 
@@ -271,6 +275,7 @@ class Manager extends EventSystem {
 	 * @returns {Manager}
 	 */
 	manage(data) {
+		this._cacheData(data);
 		data  = this._processData(data);
 
 		if(!isObject(data) && this.settings.useObjectNames)
@@ -292,7 +297,7 @@ class Manager extends EventSystem {
 
 			// ids must be defined within objects
 			// there is no other way to know if an
-			// object is new or old otherwise
+			// object is new or old
 			if(!isDefined(e[id]))
 				return console.error("Manager.manage: cannot manage objects with no ids");
 
