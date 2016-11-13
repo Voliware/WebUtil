@@ -26,7 +26,7 @@ class EventSystem {
 	 * @returns {{callbacks: Array}}
 	 * @private
 	 */
-	_create(name){
+	_createEvent(name){
 		return this.events[name] = { callbacks : [] };
 	}
 
@@ -52,7 +52,7 @@ class EventSystem {
 		var event = this.events[name];
 
 		if(!isDefined(event))
-			event = this._create(name);
+			event = this._createEvent(name);
 
 		event.callbacks.push(callback);
 		return this;

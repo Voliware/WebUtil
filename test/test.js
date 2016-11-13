@@ -6,10 +6,10 @@ var expect = chai.expect;
 // EventSystem
 
 describe("EventSystem", function() {
-	describe("create", function() {
+	describe("_	createEvent", function() {
 		it("should return a new event object", function() {
 			var t = new EventSystem();
-			var e = t._create('foo');
+			var e = t._createEvent('foo');
 			expect(e).to.have.key("callbacks");
 		});
 	});
@@ -30,7 +30,7 @@ describe("EventSystem", function() {
 		});
 		it("should add a new event callback if the event exists", function() {
 			var t = new EventSystem();
-			t._create('foo');
+			t._createEvent('foo');
 			function fooListener(sender, e){}
 			t.on('foo', fooListener);
 			expect(t.events.foo.callbacks.length).to.equal(1);

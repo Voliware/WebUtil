@@ -85,6 +85,15 @@ if (typeof getType === 'undefined') {
 		return Object.prototype.toString.call(x);
 	};
 }
+if (typeof createGuid === 'undefined') {
+	window.createGuid = function createGuid() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+		}
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	};
+}
+
 // array
 if (typeof Array.diff === 'undefined') {
 	Array.diff = function (a, b) {
@@ -142,63 +151,6 @@ if (typeof isJquery === 'undefined') {
 	};
 }
 
-/**
- * jQuery utility functions
- */
-
-var $Util = function () {
-	function $Util() {
-		_classCallCheck(this, $Util);
-	}
-
-	_createClass($Util, null, [{
-		key: 'jQuerify',
-
-
-		/**
-   * Attaches all jQuery functions to a
-   * $wrapper property of an object, but
-   * always returns the base object
-   * @param {*} obj - some object that has a $wrapper property
-   * @param {jQuery} obj.$wrapper
-   */
-		value: function jQuerify(obj) {
-			if (!obj.$wrapper) throw new ReferenceError('$Util.jQuerify: $wrapper must be a property of the first argument');
-			Util.each($Util.jqueryPrototype, function (i, e) {
-				obj[e] = function () {
-					var _obj$$wrapper;
-
-					(_obj$$wrapper = obj.$wrapper)[e].apply(_obj$$wrapper, arguments);
-					return obj;
-				};
-			});
-		}
-
-		/**
-   * Convenient wrapper for merging defaults
-   * and options object with jquery deep $.extend
-   * @param {object} defaults - the default settings
-   * @param {object} options - set options
-      */
-
-	}, {
-		key: 'opts',
-		value: function opts(defaults, options) {
-			return $.extend(true, defaults, options);
-		}
-	}]);
-
-	return $Util;
-}();
-
-$Util.jqueryPrototype = Object.getOwnPropertyNames($.prototype);
-
-// extensions for $.fn.populate
-// specificy tag name as object name
-// and a prop called populate that is a
-// function that takes some data argument
-$Util.populate = {};
-
 (function ($) {
 
 	/**
@@ -217,11 +169,16 @@ $Util.populate = {};
   */
 	$.fn.populate = function (data) {
 		var $this = $(this);
+
+		if ($this.data('populate') === false) return this;
+
 		var tag = $this.prop("tagName").toLowerCase();
 		var type = $this.attr('type');
 
 		var extension = getExtension(tag);
 		if (extension) extension.call(this, data);else defaultPopulate(tag, type, data);
+
+		if ($this.data('update') === false) this.attr('data-populate', false);
 
 		return this;
 
@@ -373,6 +330,63 @@ $Util.populate = {};
 		return this;
 	};
 })(jQuery);
+
+/**
+ * jQuery utility functions
+ */
+
+var $Util = function () {
+	function $Util() {
+		_classCallCheck(this, $Util);
+	}
+
+	_createClass($Util, null, [{
+		key: 'jQuerify',
+
+
+		/**
+   * Attaches all jQuery functions to a
+   * $wrapper property of an object, but
+   * always returns the base object
+   * @param {*} obj - some object that has a $wrapper property
+   * @param {jQuery} obj.$wrapper
+   */
+		value: function jQuerify(obj) {
+			if (!obj.$wrapper) throw new ReferenceError('$Util.jQuerify: $wrapper must be a property of the first argument');
+			Util.each($Util.jqueryPrototype, function (i, e) {
+				obj[e] = function () {
+					var _obj$$wrapper;
+
+					(_obj$$wrapper = obj.$wrapper)[e].apply(_obj$$wrapper, arguments);
+					return obj;
+				};
+			});
+		}
+
+		/**
+   * Convenient wrapper for merging defaults
+   * and options object with jquery deep $.extend
+   * @param {object} defaults - the default settings
+   * @param {object} options - set options
+      */
+
+	}, {
+		key: 'opts',
+		value: function opts(defaults, options) {
+			return $.extend(true, defaults, options);
+		}
+	}]);
+
+	return $Util;
+}();
+
+$Util.jqueryPrototype = Object.getOwnPropertyNames($.prototype);
+
+// extensions for $.fn.populate
+// specificy tag name as object name
+// and a prop called populate that is a
+// function that takes some data argument
+$Util.populate = {};
 /*!
  * eventSystem
  * https://github.com/Voliware/Util
@@ -407,8 +421,8 @@ var EventSystem = function () {
 
 
 	_createClass(EventSystem, [{
-		key: '_create',
-		value: function _create(name) {
+		key: '_createEvent',
+		value: function _createEvent(name) {
 			return this.events[name] = { callbacks: [] };
 		}
 
@@ -438,7 +452,7 @@ var EventSystem = function () {
 		value: function on(name, callback) {
 			var event = this.events[name];
 
-			if (!isDefined(event)) event = this._create(name);
+			if (!isDefined(event)) event = this._createEvent(name);
 
 			event.callbacks.push(callback);
 			return this;
@@ -845,7 +859,7 @@ var Manager = function (_EventSystem) {
 
 				// ids must be defined within objects
 				// there is no other way to know if an
-				// object is new or old otherwise
+				// object is new or old
 				if (!isDefined(e[id])) return console.error("Manager.manage: cannot manage objects with no ids");
 
 				// objectIds will always be strings

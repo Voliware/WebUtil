@@ -14,47 +14,6 @@ if(typeof isJquery === 'undefined'){
 	}
 }
 
-/**
- * jQuery utility functions
- */
-class $Util {
-
-	/**
-	 * Attaches all jQuery functions to a
-	 * $wrapper property of an object, but
-	 * always returns the base object
-	 * @param {*} obj - some object that has a $wrapper property
-	 * @param {jQuery} obj.$wrapper
-	 */
-	static jQuerify(obj) {
-		if (!obj.$wrapper)
-			throw new ReferenceError('$Util.jQuerify: $wrapper must be a property of the first argument');
-		Util.each($Util.jqueryPrototype, function(i, e) {
-			obj[e] = function() {
-				obj.$wrapper[e](...arguments);
-				return obj;
-			}
-		});
-	}
-
-	/**
-	 * Convenient wrapper for merging defaults
-	 * and options object with jquery deep $.extend
-	 * @param {object} defaults - the default settings
-	 * @param {object} options - set options
-     */
-	static opts(defaults, options){
-		return $.extend(true, defaults, options);
-	}
-}
-
-$Util.jqueryPrototype = Object.getOwnPropertyNames($.prototype);
-
-// extensions for $.fn.populate
-// specificy tag name as object name
-// and a prop called populate that is a
-// function that takes some data argument
-$Util.populate = {};
 
 
 (function($) {
@@ -75,6 +34,10 @@ $Util.populate = {};
 	 */
 	$.fn.populate = function(data){
 		var $this = $(this);
+
+		if($this.data('populate') === false)
+			return this;
+
 		var tag = $this.prop("tagName").toLowerCase();
 		var type = $this.attr('type');
 
@@ -83,6 +46,9 @@ $Util.populate = {};
 			extension.call(this, data);
 		else
 			defaultPopulate(tag, type, data);
+
+		if($this.data('update') === false)
+			this.attr('data-populate', false);
 
 		return this;
 
@@ -246,3 +212,45 @@ $Util.populate = {};
 	};
 
 })(jQuery);
+
+/**
+ * jQuery utility functions
+ */
+class $Util {
+
+	/**
+	 * Attaches all jQuery functions to a
+	 * $wrapper property of an object, but
+	 * always returns the base object
+	 * @param {*} obj - some object that has a $wrapper property
+	 * @param {jQuery} obj.$wrapper
+	 */
+	static jQuerify(obj) {
+		if (!obj.$wrapper)
+			throw new ReferenceError('$Util.jQuerify: $wrapper must be a property of the first argument');
+		Util.each($Util.jqueryPrototype, function(i, e) {
+			obj[e] = function() {
+				obj.$wrapper[e](...arguments);
+				return obj;
+			}
+		});
+	}
+
+	/**
+	 * Convenient wrapper for merging defaults
+	 * and options object with jquery deep $.extend
+	 * @param {object} defaults - the default settings
+	 * @param {object} options - set options
+     */
+	static opts(defaults, options){
+		return $.extend(true, defaults, options);
+	}
+}
+
+$Util.jqueryPrototype = Object.getOwnPropertyNames($.prototype);
+
+// extensions for $.fn.populate
+// specificy tag name as object name
+// and a prop called populate that is a
+// function that takes some data argument
+$Util.populate = {};
