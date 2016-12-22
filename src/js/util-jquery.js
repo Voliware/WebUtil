@@ -35,18 +35,21 @@ if(typeof isJquery === 'undefined'){
 	$.fn.populate = function(data){
 		var $this = $(this);
 
+		// don't popualte if data-populate=false
 		if($this.data('populate') === false)
 			return this;
 
 		var tag = $this.prop("tagName").toLowerCase();
 		var type = $this.attr('type');
 
+		// populate using extensions or defaults
 		var extension = getExtension(tag);
 		if(extension)
 			extension.call(this, data);
 		else
 			defaultPopulate(tag, type, data);
 
+		// prevent further populates if update is set to false
 		if($this.data('update') === false)
 			this.attr('data-populate', false);
 
@@ -104,8 +107,8 @@ if(typeof isJquery === 'undefined'){
 						$this.prop('checked', true);
 					break;
 				case "radio":
-					if(data === $this.attr('value'))
-						$this.prop('checked', true);
+					var dataStr = data.toString();
+					$this.filter('[value="'+dataStr+'"]').prop('checked', true);
 					break;
 				default:
 					$this.val(data);
