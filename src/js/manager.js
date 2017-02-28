@@ -48,8 +48,9 @@ class Manager extends EventSystem {
 		this.objects = {};
 		this.count = 0;
 
-		// cached data passed to manage()
+		// cached and processed data passed to manage()
 		this._cachedData = {};
+		this._processedData = {};
 		// last serialized collection
 		this.serializedObjects = [];
 		// a flag that is set to true when the add/edit/delete
@@ -230,18 +231,19 @@ class Manager extends EventSystem {
 	 * @private
 	 */
 	_cacheData(data){
-		this._cachedData = Object.create(data);
+		this._cachedData = deepCopy(data);
 		return this;
 	}
 
 	/**
 	 * Process all incoming data to manage
 	 * @param {object} data
-	 * @returns {object}
+	 * @returns {Manager}
 	 * @private
 	 */
 	_processData(data){
-		return data;
+		this._processedData = deepCopy(data);
+		return this;
 	}
 
 	/**
@@ -251,7 +253,8 @@ class Manager extends EventSystem {
 	getIds() {
 		var ids = [];
 		for(var i in this.objects){
-			ids.push(i);
+			var id = this.getId(this.objects[i]);
+			ids.push(id);
 		}
 		return ids;
 	}
@@ -262,7 +265,7 @@ class Manager extends EventSystem {
 	 * @returns {string|undefined}
 	 */
 	getId(obj){
-		return obj[this.settings.identifier];
+		return obj[this.settings.identifier].toString();
 	}
 
 	/**
@@ -276,9 +279,9 @@ class Manager extends EventSystem {
 	 */
 	manage(data) {
 		this._cacheData(data);
-		data  = this._processData(data);
+		this._processData(data);
 
-		if(!isObject(data) && this.settings.useObjectNames)
+		if(!isObject(this._processedData) && this.settings.useObjectNames)
 			throw new Error("Manager.manage: to use option useObjectNames, object passed to manage() must be an object.");
 
 		var self = this;
@@ -289,8 +292,8 @@ class Manager extends EventSystem {
 		var dataIds = [];
 
 		// add or update objects
-		for(var i in data){
-			var e = data[i];
+		for(var i in this._processedData){
+			var e = this._processedData[i];
 
 			if(this.settings.useObjectNames)
 				e[id] = i;

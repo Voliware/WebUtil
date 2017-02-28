@@ -232,12 +232,18 @@ class $Util {
 	 * $wrapper property of an object, but
 	 * always returns the base object
 	 * @param {*} obj - some object that has a $wrapper property
+	 * @param {boolean} [override=false] - whether to override any already-named properties
 	 * @param {jQuery} obj.$wrapper
 	 */
-	static jQuerify(obj) {
+	static jQuerify(obj, override = false) {
 		if (!obj.$wrapper)
 			throw new ReferenceError('$Util.jQuerify: $wrapper must be a property of the first argument');
+
 		Util.each($Util.jqueryPrototype, function(i, e) {
+			// continue if override is false
+			if(isDefined(obj[e]) && !override)
+				return true;
+
 			obj[e] = function() {
 				obj.$wrapper[e](...arguments);
 				return obj;
