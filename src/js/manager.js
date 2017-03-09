@@ -37,7 +37,9 @@ class Manager extends EventSystem {
 			// use the name of the object.
 			// this only works when passing
 			// objects of objects to manage()
-			useObjectNames : false
+			useObjectNames : false,
+			// max number of objs to manage
+			max : 0
 		};
 		this.settings = Object.assign(defaults, options);
 
@@ -178,7 +180,7 @@ class Manager extends EventSystem {
 		 */
 		function postUpdate(){
 			self.requiresNewSerialize = true;
-			self.trigger('add', obj);
+			self.trigger('update', obj);
 			self.count++;
 			obj._count = self.count;
 		}
