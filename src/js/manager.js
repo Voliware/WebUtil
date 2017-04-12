@@ -126,7 +126,7 @@ class Manager extends EventSystem {
 		}
 		// if no id is passed, check that it has
 		// an identifier property already
-		else if(obj[identifier]) {
+		else if(!isNullOrUndefined(obj[identifier])) {
 			this.objects[obj[identifier]] = obj;
 			postAdd();
 		}
@@ -165,12 +165,13 @@ class Manager extends EventSystem {
 			this.objects[id] = obj;
 			postUpdate();
 		}
-		else if(obj[identifier]){
+		else if(!isNullOrUndefined(obj[identifier])){
 			this.objects[obj[identifier]] = obj;
 			postUpdate();
 		}
-		else 
+		else {
 			console.warn('Manager._update: cannot update an object with no identifier');
+		}
 				
 		return obj;
 
@@ -207,8 +208,9 @@ class Manager extends EventSystem {
 			if (this.count > 0)
 				this.count--;
 		}
-		else
+		else{
 			console.error('Manager._delete: cannot delete an object with no identifier');
+		}
 
 		return this;
 	}
