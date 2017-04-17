@@ -34,7 +34,7 @@ if(typeof isNull === 'undefined'){
 		return x === null;
 	}
 }
-if(typeof isNullOrUndefined() === 'undefined'){
+if(typeof isNullOrUndefined === 'undefined'){
 	window.isNullOrUndefined = function(x){
 		return x === null || x === 'undefined';
 	}

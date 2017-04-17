@@ -145,6 +145,20 @@ if(typeof isJquery === 'undefined'){
 	};
 
 	/**
+	 * Populate an elements attributes by matching
+	 * data keys with attributes of the same name.
+	 * @param {object} data
+	 * @returns {jQuery}
+	 */
+	$.fn.populateAttr = function(data){
+		var $this = $(this);
+		$.each(data, function(i, e){
+			$this.attr('i', e);
+		});
+		return this;
+	};
+
+	/**
 	 * Slide toggle who's first arg is a toggle state
 	 * @param {boolean} state - true to slide down
 	 * @param {string} [options=""]
