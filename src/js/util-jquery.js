@@ -270,9 +270,15 @@ class $Util {
 	 * and options object with jquery deep $.extend
 	 * @param {object} defaults - the default settings
 	 * @param {object} options - set options
+	 * @param {string} [arrayMode] - optional array mode
      */
-	static opts(defaults, options){
-		return $.extend(true, defaults, options);
+	static opts(defaults, options, arrayMode){
+		if(arrayMode){
+			return $.extend(true, defaults, options);
+		}
+		else {
+			return $.extendext(true, arrayMode, defaults, options);
+		}
 	}
 }
 

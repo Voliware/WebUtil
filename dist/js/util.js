@@ -1,8 +1,8 @@
-"use strict";
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
@@ -10,43 +10,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/*!
- * jQuery.extendext 0.1.2
- *
- * Copyright 2014-2016 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
- * Licensed under MIT (http://opensource.org/licenses/MIT)
- *
- * Based on jQuery.extend by jQuery Foundation, Inc. and other contributors
- */
-!function (a, b) {
-	"function" == typeof define && define.amd ? define(["jquery"], b) : "object" == (typeof module === "undefined" ? "undefined" : _typeof(module)) && module.exports ? module.exports = b(require("jquery")) : b(a.jQuery);
-}(undefined, function ($) {
-	"use strict";
-	$.extendext = function () {
-		var a,
-		    b,
-		    c,
-		    d,
-		    e,
-		    f,
-		    g = arguments[0] || {},
-		    h = 1,
-		    i = arguments.length,
-		    j = !1,
-		    k = "default";for ("boolean" == typeof g && (j = g, g = arguments[h++] || {}), "string" == typeof g && (k = g.toLowerCase(), "concat" !== k && "replace" !== k && "extend" !== k && (k = "default"), g = arguments[h++] || {}), "object" == (typeof g === "undefined" ? "undefined" : _typeof(g)) || $.isFunction(g) || (g = {}), h === i && (g = this, h--); h < i; h++) {
-			if (null !== (a = arguments[h])) if ($.isArray(a) && "default" !== k) switch (f = g && $.isArray(g) ? g : [], k) {case "concat":
-					g = f.concat($.extend(j, [], a));break;case "replace":
-					g = $.extend(j, [], a);break;case "extend":
-					a.forEach(function (a, b) {
-						if ("object" == (typeof a === "undefined" ? "undefined" : _typeof(a))) {
-							var c = $.isArray(a) ? [] : {};f[b] = $.extendext(j, k, f[b] || c, a);
-						} else f.indexOf(a) === -1 && f.push(a);
-					}), g = f;} else for (b in a) {
-				c = g[b], d = a[b], g !== d && (j && d && ($.isPlainObject(d) || (e = $.isArray(d))) ? (e ? (e = !1, f = c && $.isArray(c) ? c : []) : f = c && $.isPlainObject(c) ? c : {}, g[b] = $.extendext(j, k, f, d)) : void 0 !== d && (g[b] = d));
-			}
-		}return g;
-	};
-});
 /*!
  * util
  * https://github.com/Voliware/Util
@@ -56,14 +19,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  * General utility functions
  */
-
 var Util = function () {
 	function Util() {
 		_classCallCheck(this, Util);
 	}
 
 	_createClass(Util, null, [{
-		key: "each",
+		key: 'each',
 
 		/**
    * Wraps a for in loop.
@@ -118,7 +80,7 @@ if (typeof isNumber === 'undefined') {
 }
 if (typeof isObject === 'undefined') {
 	window.isObject = function (x) {
-		return x !== null && (typeof x === "undefined" ? "undefined" : _typeof(x)) === 'object';
+		return x !== null && (typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object';
 	};
 }
 if (typeof isArray === 'undefined') {
@@ -192,7 +154,7 @@ if (typeof Object.assign != 'function') {
  * It also borrows some code from http://stackoverflow.com/a/11621004/560114
  */
 function deepCopy(src, /* INTERNAL */_visited, _copiesVisited) {
-	if (src === null || (typeof src === "undefined" ? "undefined" : _typeof(src)) !== 'object') {
+	if (src === null || (typeof src === 'undefined' ? 'undefined' : _typeof(src)) !== 'object') {
 		return src;
 	}
 
@@ -511,7 +473,7 @@ var $Util = function () {
 	}
 
 	_createClass($Util, null, [{
-		key: "jQuerify",
+		key: 'jQuerify',
 
 
 		/**
@@ -545,12 +507,17 @@ var $Util = function () {
    * and options object with jquery deep $.extend
    * @param {object} defaults - the default settings
    * @param {object} options - set options
+   * @param {string} [arrayMode] - optional array mode
       */
 
 	}, {
-		key: "opts",
-		value: function opts(defaults, options) {
-			return $.extend(true, defaults, options);
+		key: 'opts',
+		value: function opts(defaults, options, arrayMode) {
+			if (arrayMode) {
+				return $.extend(true, defaults, options);
+			} else {
+				return $.extendext(true, arrayMode, defaults, options);
+			}
 		}
 	}]);
 
@@ -598,7 +565,7 @@ var EventSystem = function () {
 
 
 	_createClass(EventSystem, [{
-		key: "_createEvent",
+		key: '_createEvent',
 		value: function _createEvent(name) {
 			return this.events[name] = { callbacks: [] };
 		}
@@ -611,7 +578,7 @@ var EventSystem = function () {
    */
 
 	}, {
-		key: "_destroy",
+		key: '_destroy',
 		value: function _destroy(name) {
 			if (isDefined(this.event[name])) delete this.event[name];
 			return this;
@@ -625,7 +592,7 @@ var EventSystem = function () {
    */
 
 	}, {
-		key: "on",
+		key: 'on',
 		value: function on(name, callback) {
 			var event = this.events[name];
 
@@ -644,7 +611,7 @@ var EventSystem = function () {
    */
 
 	}, {
-		key: "off",
+		key: 'off',
 		value: function off(name, callback) {
 			var event = this.events[name];
 
@@ -662,7 +629,7 @@ var EventSystem = function () {
    */
 
 	}, {
-		key: "offAll",
+		key: 'offAll',
 		value: function offAll(name) {
 			var event = this.events[name];
 
@@ -677,7 +644,7 @@ var EventSystem = function () {
    */
 
 	}, {
-		key: "trigger",
+		key: 'trigger',
 		value: function trigger() {
 			// grab the name of the event and remove it from arguments
 			var shift = [].shift;
@@ -701,7 +668,7 @@ var EventSystem = function () {
    */
 
 	}, {
-		key: "emit",
+		key: 'emit',
 		value: function emit() {
 			return this.trigger();
 		}
@@ -789,7 +756,7 @@ var Manager = function (_EventSystem) {
 
 
 	_createClass(Manager, [{
-		key: "_exists",
+		key: '_exists',
 		value: function _exists() {
 			var arg = arguments[0];
 			if (isString(arg) || isNumber(arg)) return isDefined(this.objects[arg]);else return isDefined(this.objects[arg[this.settings.identifier]]);
@@ -805,7 +772,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "_get",
+		key: '_get',
 		value: function _get() {
 			var arg = arguments[0];
 			var obj = null;
@@ -834,7 +801,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "_add",
+		key: '_add',
 		value: function _add(obj, id) {
 			var self = this;
 			var identifier = this.settings.identifier;
@@ -881,7 +848,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "_update",
+		key: '_update',
 		value: function _update(obj, id) {
 			var self = this;
 			var identifier = this.settings.identifier;
@@ -919,7 +886,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "_delete",
+		key: '_delete',
 		value: function _delete() {
 			var arg = arguments[0];
 			var obj = null;
@@ -947,7 +914,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "_empty",
+		key: '_empty',
 		value: function _empty() {
 			// ..in likely case there are references
 			for (var i in this.objects) {
@@ -964,7 +931,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "_cacheData",
+		key: '_cacheData',
 		value: function _cacheData(data) {
 			this._cachedData = deepCopy(data);
 			return this;
@@ -978,7 +945,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "_processData",
+		key: '_processData',
 		value: function _processData(data) {
 			this._processedData = deepCopy(data);
 			return this;
@@ -990,7 +957,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "getIds",
+		key: 'getIds',
 		value: function getIds() {
 			var ids = [];
 			for (var i in this.objects) {
@@ -1007,7 +974,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "getId",
+		key: 'getId',
 		value: function getId(obj) {
 			return obj[this.settings.identifier].toString();
 		}
@@ -1023,7 +990,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "manage",
+		key: 'manage',
 		value: function manage(data) {
 			this._cacheData(data);
 			this._processData(data);
@@ -1075,7 +1042,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "exists",
+		key: 'exists',
 		value: function exists() {
 			return this._exists.apply(this, arguments);
 		}
@@ -1087,7 +1054,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "addObjects",
+		key: 'addObjects',
 		value: function addObjects() {
 			var data = arguments.length > 1 ? [].slice.call(arguments).sort() : arguments[0];
 			for (var i in data) {
@@ -1103,7 +1070,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "addObject",
+		key: 'addObject',
 		value: function addObject() {
 			return this._add.apply(this, arguments);
 		}
@@ -1114,7 +1081,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "getObject",
+		key: 'getObject',
 		value: function getObject() {
 			return this._get.apply(this, arguments);
 		}
@@ -1125,7 +1092,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "updateObject",
+		key: 'updateObject',
 		value: function updateObject() {
 			return this._update.apply(this, arguments);
 		}
@@ -1136,7 +1103,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "deleteObject",
+		key: 'deleteObject',
 		value: function deleteObject() {
 			return this._delete.apply(this, arguments);
 		}
@@ -1147,7 +1114,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "deleteObjects",
+		key: 'deleteObjects',
 		value: function deleteObjects() {
 			return this._empty();
 		}
@@ -1160,7 +1127,7 @@ var Manager = function (_EventSystem) {
    */
 
 	}, {
-		key: "serializer",
+		key: 'serializer',
 		value: function serializer() {
 			var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 			var max = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -1220,7 +1187,7 @@ var Pool = function () {
 
 
 	_createClass(Pool, [{
-		key: "_clearStats",
+		key: '_clearStats',
 		value: function _clearStats() {
 			var inUse = this.totalAlloc - this.totalFree;
 			this.totalAlloc = inUse || 0;
@@ -1234,7 +1201,7 @@ var Pool = function () {
    */
 
 	}, {
-		key: "alloc",
+		key: 'alloc',
 		value: function alloc() {
 			var obj;
 			if (this.pool.length === 0) {
@@ -1255,7 +1222,7 @@ var Pool = function () {
    */
 
 	}, {
-		key: "free",
+		key: 'free',
 		value: function free(obj) {
 			this.pool.push(obj);
 			this.totalFree++;
@@ -1269,7 +1236,7 @@ var Pool = function () {
    */
 
 	}, {
-		key: "collect",
+		key: 'collect',
 		value: function collect() {
 			this.pool = [];
 			this._clearStats();
