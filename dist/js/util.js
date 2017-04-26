@@ -513,10 +513,10 @@ var $Util = function () {
 	}, {
 		key: 'opts',
 		value: function opts(defaults, options, arrayMode) {
-			if (arrayMode) {
-				return $.extend(true, defaults, options);
-			} else {
+			if (isDefined(arrayMode)) {
 				return $.extendext(true, arrayMode, defaults, options);
+			} else {
+				return $.extend(true, defaults, options);
 			}
 		}
 	}]);

@@ -273,11 +273,11 @@ class $Util {
 	 * @param {string} [arrayMode] - optional array mode
      */
 	static opts(defaults, options, arrayMode){
-		if(arrayMode){
-			return $.extend(true, defaults, options);
+		if(isDefined(arrayMode)){
+			return $.extendext(true, arrayMode, defaults, options);
 		}
 		else {
-			return $.extendext(true, arrayMode, defaults, options);
+			return $.extend(true, defaults, options);
 		}
 	}
 }
