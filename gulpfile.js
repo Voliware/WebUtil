@@ -28,7 +28,7 @@ buildFileSys(dist, 'dist');
  */
 function buildUtil(){
 	var js = [
-		src.src.js + 'extendext.min.js',
+		src.src.js + 'extendext.js',
 		src.src.js + 'util.js',
 		src.src.js + 'util-jquery.js',
 		src.src.js + 'eventSystem.js',
