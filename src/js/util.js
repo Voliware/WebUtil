@@ -56,7 +56,7 @@ if(typeof isNumber === 'undefined'){
 }
 if(typeof isObject === 'undefined'){
 	window.isObject = function(x){
-		return x !== null && typeof x === 'object';
+		return x !== null && !isArray(x) && typeof x === 'object';
 	}
 }
 if(typeof isArray === 'undefined'){
